@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import AppError from './../errors/AppError';
 
 import authConfig from '../config/auth';
 
@@ -23,13 +24,13 @@ class AuthenticateUserService {
     const user = await usersRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error('Invalid credencials.');
+      throw new AppError('Invalid credencials.', 401);
     }
 
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
-      throw new Error('Invalid credencials.');
+      throw new AppError('Invalid credencials.', 401);
     }
 
     const token = sign({}, authConfig.jwt.secret, {
