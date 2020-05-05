@@ -29,6 +29,11 @@
     "@typescript-eslint-no-unsed-vars": ["error", {
       "argsIgnorePattern": "_"
     }],
+    "@typescript-eslint/interface-name-prefix": [
+      "error", {
+        "prefixWithI": "aways"
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",
