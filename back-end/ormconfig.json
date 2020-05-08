@@ -9,9 +9,9 @@
     "./src/modules/**/infra/typeorm/entities/*.ts"
   ],
   "migrations": [
-    "./src/modules/**/infra/typeorm//migrations/*.ts"
+    "./src/shared/infra/typeorm//migrations/*.ts"
   ],
   "cli": {
-    "migrationsDir": "./src/modules/**/infra/typeorm//migrations"
+    "migrationsDir": "./src/shared/infra/typeorm//migrations"
   }
 }

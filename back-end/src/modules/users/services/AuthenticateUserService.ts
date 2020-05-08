@@ -1,12 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import AppError from '@shared/errors/AppError';
-
 import authConfig from '@config/auth';
 
 import User from '@modules/users/infra/typeorm/entities/User';
 import IUserRepository from '../repositories/IUserRepository';
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
   email: string;
@@ -22,18 +21,22 @@ interface IResponse {
 class AuthenticateUserService {
   constructor(
     @inject('UserRepository')
-    private usersRepository: IUserRepository) {
-  }
+    private usersRepository: IUserRepository,
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
+  ) {}
 
   public async execute({ email, password }: IRequest): Promise<IResponse> {
-
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
       throw new AppError('Invalid credencials.', 401);
     }
 
-    const passwordMatched = await compare(password, user.password);
+    const passwordMatched = await this.hashProvider.compareHash(
+      password,
+      user.password,
+    );
 
     if (!passwordMatched) {
       throw new AppError('Invalid credencials.', 401);
