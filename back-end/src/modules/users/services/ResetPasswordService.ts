@@ -3,7 +3,7 @@ import { differenceInMinutes } from 'date-fns';
 // import User from '@modules/users/infra/typeorm/entities/User';
 import IUserRepository from '@modules/users/repositories/IUserRepository';
 import AppError from '@shared/errors/AppError';
-import IUserTokenRepository from '@modules/users/repositories/IUsersTokenRepository';
+import IUsersTokenRepository from '@modules/users/repositories/IUsersTokenRepository';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
@@ -12,7 +12,7 @@ interface IRequest {
 }
 
 @injectable()
-class SendForgotPasswordEmailService {
+class ResetPasswordService {
   constructor(
     @inject('UserRepository')
     private usersRepository: IUserRepository,
@@ -20,12 +20,12 @@ class SendForgotPasswordEmailService {
     @inject('HashProvider')
     private hashProvider: IHashProvider,
 
-    @inject('UserTokenRepository')
-    private userTokenRepository: IUserTokenRepository,
+    @inject('UsersTokenRepository')
+    private usersTokenRepository: IUsersTokenRepository,
   ) {}
 
   public async execute({ token, password }: IRequest): Promise<void> {
-    const userToken = await this.userTokenRepository.findByToken(token);
+    const userToken = await this.usersTokenRepository.findByToken(token);
     if (!userToken) {
       throw new AppError('User token does not exists.');
     }
@@ -41,8 +41,8 @@ class SendForgotPasswordEmailService {
     }
 
     user.password = await this.hashProvider.generateHash(password);
-    this.usersRepository.save(user);
+    await this.usersRepository.save(user);
   }
 }
 
-export default SendForgotPasswordEmailService;
+export default ResetPasswordService;

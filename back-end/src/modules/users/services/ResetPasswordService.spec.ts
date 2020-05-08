@@ -1,6 +1,7 @@
 import FakeUserRepository from '@modules/users/repositories/fakes/FakeUserRepository';
 import ResetPasswordService from '@modules/users/services/ResetPasswordService';
 import AppError from '@shared/errors/AppError';
+import { uuid } from 'uuidv4';
 import FakeUsersTokenRepository from '../repositories/fakes/FakeUsersTokenRepository';
 import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 
@@ -43,15 +44,20 @@ describe('ResetPasswordService', () => {
   });
 
   it('should not be able to reset the password with non-existing token', async () => {
+    await expect(
+      resetPasswordService.execute({
+        token: 'non-existing-token',
+        password: 'abcd1234',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to reset the password of a non existing user', async () => {
     const { token } = await fakeUsersTokenRepository.generate(
       'non-existing-user',
     );
-
     await expect(
-      resetPasswordService.execute({
-        token,
-        password: 'abcd1234',
-      }),
+      resetPasswordService.execute({ token, password: '123123' }),
     ).rejects.toBeInstanceOf(AppError);
   });
 
