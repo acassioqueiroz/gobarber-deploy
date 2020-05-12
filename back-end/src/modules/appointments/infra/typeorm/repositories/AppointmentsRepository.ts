@@ -1,14 +1,43 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, Repository, Between } from 'typeorm';
+import { endOfMonth } from 'date-fns';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import IAppointmentRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
+import IFindAllInMonthFromProviderDTO from '@modules/appointments/dtos/IFindAllInMonthFromProviderDTO';
+import IFindAllInDayFromProviderDTO from '@modules/appointments/dtos/IFindAllInDayFromProviderDTO';
 
 class AppointmentsRepository implements IAppointmentRepository {
-
   private ormRepository: Repository<Appointment>;
 
-  constructor () {
+  constructor() {
     this.ormRepository = getRepository(Appointment);
+  }
+
+  public async findAllInDayFromProvider({
+    provider_id,
+    day,
+    year,
+    month,
+  }: IFindAllInDayFromProviderDTO): Promise<Appointment[]> {
+    const start_date = new Date(year, month - 1, day, 8);
+    const end_date = new Date(year, month - 1, day, 18);
+    const findAppointments = await this.ormRepository.find({
+      where: { provider_id, date: Between(start_date, end_date) },
+    });
+    return findAppointments;
+  }
+
+  public async findAllInMonthFromProvider({
+    provider_id,
+    year,
+    month,
+  }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
+    const start_date = new Date(year, month - 1, 1);
+    const end_date = endOfMonth(start_date);
+    const findAppointments = await this.ormRepository.find({
+      where: { provider_id, date: Between(start_date, end_date) },
+    });
+    return findAppointments;
   }
 
   public async findByDate(date: Date): Promise<Appointment | undefined> {
@@ -19,7 +48,7 @@ class AppointmentsRepository implements IAppointmentRepository {
   }
 
   public async find(): Promise<Appointment[]> {
-    return await this.ormRepository.find();
+    return this.ormRepository.find();
   }
 
   public async create(data: ICreateAppointmentDTO): Promise<Appointment> {
