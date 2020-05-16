@@ -1,14 +1,19 @@
 import FakeUserRepository from '@modules/users/repositories/fakes/FakeUserRepository';
-// import AppError from '@shared/errors/AppError';
+import FakeCacheProvider from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
 import ListProvidersService from './ListProvidersService';
 
 let fakeUserRepository: FakeUserRepository;
 let listProviders: ListProvidersService;
+let fakeCacheProvider: FakeCacheProvider;
 
 describe('ListProvidersService', () => {
   beforeEach(() => {
     fakeUserRepository = new FakeUserRepository();
-    listProviders = new ListProvidersService(fakeUserRepository);
+    fakeCacheProvider = new FakeCacheProvider();
+    listProviders = new ListProvidersService(
+      fakeUserRepository,
+      fakeCacheProvider,
+    );
   });
 
   it('should be able to show the profile', async () => {
@@ -32,6 +37,10 @@ describe('ListProvidersService', () => {
 
     const providers = await listProviders.execute({ user_id: loggedUser.id });
 
-    expect(providers).toEqual([user1, user2]);
+    delete user1.password;
+    delete user2.password;
+
+    expect(providers[0]).toEqual(expect.objectContaining(user1));
+    expect(providers[1]).toEqual(expect.objectContaining(user2));
   });
 });

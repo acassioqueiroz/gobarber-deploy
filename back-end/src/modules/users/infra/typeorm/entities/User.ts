@@ -5,6 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import uploadConfig from '@config/upload';
+
+import { Exclude, Expose } from 'class-transformer';
 
 @Entity('users')
 class User {
@@ -17,6 +20,7 @@ class User {
   @Column()
   name: string;
 
+  @Exclude()
   @Column()
   password: string;
 
@@ -28,6 +32,13 @@ class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Expose({ name: 'avatar_url' })
+  get getAvatarUrl(): string | null {
+    return this.avatar
+      ? `${uploadConfig.config[uploadConfig.driver].baseURL}/${this.avatar}`
+      : null;
+  }
 }
 
 export default User;
