@@ -37,7 +37,7 @@ class User {
   get getAvatarUrl(): string | null {
     return this.avatar
       ? `${uploadConfig.config[uploadConfig.driver].baseURL}/${this.avatar}`
-      : null;
+      : 'http://localhost:3333/files/6895bcc027f6c8f70e9d-avatar.png';
   }
 }
 

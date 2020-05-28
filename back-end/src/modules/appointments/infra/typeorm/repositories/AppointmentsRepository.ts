@@ -23,6 +23,7 @@ class AppointmentsRepository implements IAppointmentRepository {
     const end_date = new Date(year, month - 1, day, 18);
     const findAppointments = await this.ormRepository.find({
       where: { provider_id, date: Between(start_date, end_date) },
+      relations: ['user'],
     });
     return findAppointments;
   }
@@ -40,9 +41,12 @@ class AppointmentsRepository implements IAppointmentRepository {
     return findAppointments;
   }
 
-  public async findByDate(date: Date): Promise<Appointment | undefined> {
+  public async findByDate(
+    date: Date,
+    provider_id: string,
+  ): Promise<Appointment | undefined> {
     const findAppointment = await this.ormRepository.findOne({
-      where: { date },
+      where: { date, provider_id },
     });
     return findAppointment;
   }

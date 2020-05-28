@@ -41,9 +41,14 @@ class AppointmentsRepository implements IAppointmentRepository {
     return findAppointments;
   }
 
-  public async findByDate(date: Date): Promise<Appointment | undefined> {
-    const findAppointment = this.appointments.find((appointment) =>
-      isEqual(appointment.date, date),
+  public async findByDate(
+    date: Date,
+    provider_id: string,
+  ): Promise<Appointment | undefined> {
+    const findAppointment = this.appointments.find(
+      (appointment) =>
+        appointment.provider_id === provider_id &&
+        isEqual(appointment.date, date),
     );
     return findAppointment;
   }
