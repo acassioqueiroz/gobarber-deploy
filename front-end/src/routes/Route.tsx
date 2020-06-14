@@ -22,7 +22,6 @@ const Route: React.FC<RouteProps> = ({
   return (
     <ReactRoute
       render={(location) => {
-        console.log(location);
         return isPrivate === isSigned ? (
           <Component />
         ) : (

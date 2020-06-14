@@ -26,7 +26,6 @@ class ListProvidersService {
       const findUsers = await this.usersRepository.findAllProviders({
         except_user_id: user_id,
       });
-      console.log('consulta feita no banco');
 
       users = classToClass(findUsers);
       await this.cacheProvider.save(cacheKey, users);
