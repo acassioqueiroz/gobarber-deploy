@@ -34,13 +34,19 @@ const Dashboard: React.FC = () => {
   const { navigate } = useNavigation();
 
   useEffect(() => {
-    api.get('providers').then((response) => {
-      setProviders(response.data);
-    });
+    api
+      .get('providers')
+      .then((response) => {
+        setProviders(response.data);
+      })
+      .catch((error) => {
+        console.log('error:', error);
+      });
   }, []);
 
   const navigateToProfile = useCallback(() => {
     navigate('Profile');
+    // signOut();
   }, [navigate]);
 
   const navigateToCreateAppointment = useCallback(
