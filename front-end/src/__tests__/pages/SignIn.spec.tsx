@@ -4,6 +4,8 @@ import SignIn from '../../pages/SignIn';
 
 const mockedHistoryPush = jest.fn();
 
+const mockedSignIn = jest.fn();
+
 jest.mock('react-router-dom', () => {
   return {
     useHistory: () => ({
@@ -16,7 +18,17 @@ jest.mock('react-router-dom', () => {
 jest.mock('../../hooks/Auth', () => {
   return {
     useAuth: () => ({
-      signIn: jest.fn(),
+      signIn: mockedSignIn,
+    }),
+  };
+});
+
+const mockedAddToast = jest.fn();
+
+jest.mock('../../hooks/Toast', () => {
+  return {
+    useToast: () => ({
+      addToast: mockedAddToast,
     }),
   };
 });
@@ -56,24 +68,8 @@ describe('SignIn page', () => {
   });
 
   it('should not be able to sign when occour an error', async () => {
-    jest.mock('../../hooks/Auth', () => {
-      return {
-        useAuth: () => ({
-          signIn: () => {
-            throw new Error();
-          },
-        }),
-      };
-    });
-
-    const mockedAddToast = jest.fn();
-
-    jest.mock('../../hooks/Toast', () => {
-      return {
-        useToast: () => ({
-          addToast: mockedAddToast,
-        }),
-      };
+    mockedSignIn.mockImplementation(() => {
+      throw new Error();
     });
 
     const { getByPlaceholderText, getByText } = render(<SignIn />);
